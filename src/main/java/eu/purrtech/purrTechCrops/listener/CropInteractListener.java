@@ -1,7 +1,6 @@
 package eu.purrtech.purrTechCrops.listener;
 
 import eu.purrtech.purrTechCrops.harvest.HarvestService;
-import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -41,15 +40,11 @@ public final class CropInteractListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        GameMode gameMode = player.getGameMode();
-        if (gameMode == GameMode.SPECTATOR || gameMode == GameMode.ADVENTURE) {
-            return;
-        }
         if (!player.hasPermission(USE_PERMISSION)) {
             return;
         }
 
-        harvestService.findHarvestable(block).ifPresent(crop -> {
+        harvestService.findHarvestable(player, block).ifPresent(crop -> {
             harvestService.harvest(player, block, crop);
             // Prevent the held item from being used (placing a block, bone meal, ...).
             event.setCancelled(true);

@@ -25,18 +25,24 @@ public final class CropRegistry {
     }
 
     /**
-     * Vanilla crops supported out of the box.
+     * Vanilla crops supported out of the box; used when the config has no crops section.
      */
     public static CropRegistry defaults() {
         return new CropRegistry(List.of(
                 new CropDefinition(Material.WHEAT, Material.WHEAT_SEEDS),
                 new CropDefinition(Material.CARROTS, Material.CARROT),
                 new CropDefinition(Material.POTATOES, Material.POTATO),
-                new CropDefinition(Material.BEETROOTS, Material.BEETROOT_SEEDS)
+                new CropDefinition(Material.BEETROOTS, Material.BEETROOT_SEEDS),
+                new CropDefinition(Material.NETHER_WART, Material.NETHER_WART),
+                new CropDefinition(Material.COCOA, Material.COCOA_BEANS)
         ));
     }
 
     public Optional<CropDefinition> find(Material block) {
         return Optional.ofNullable(crops.get(block));
+    }
+
+    public int size() {
+        return crops.size();
     }
 }

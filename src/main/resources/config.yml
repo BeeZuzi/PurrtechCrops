@@ -1,0 +1,40 @@
+# PurrTechCrops configuration
+# Do not change this value, it is used to update the config between plugin versions.
+config-version: 1
+
+# Crops that can be harvested with a right click.
+# Format: <CROP_BLOCK>: <ITEM_USED_TO_REPLANT>
+# One replant item is taken from the drops to plant the crop again.
+crops:
+  WHEAT: WHEAT_SEEDS
+  CARROTS: CARROT
+  POTATOES: POTATO
+  BEETROOTS: BEETROOT_SEEDS
+  NETHER_WART: NETHER_WART
+  COCOA: COCOA_BEANS
+
+# Worlds where right-click harvesting is disabled (case sensitive).
+disabled-worlds: []
+
+harvest:
+  # Only harvest when the player holds a hoe in the main hand.
+  require-hoe: false
+  # Sneaking players get the vanilla behaviour instead of harvesting.
+  disable-when-sneaking: false
+  # Apply Fortune from the item held in the main hand.
+  apply-fortune: true
+  # Damage the hoe by 1 durability per harvest (respects Unbreaking). Only applies when holding a hoe.
+  damage-hoe: true
+  # Where the drops go:
+  #   GROUND    - dropped on the ground like when breaking the crop
+  #   INVENTORY - added to the player's inventory, anything that does not fit is dropped on the ground
+  drop-mode: GROUND
+  # What to do when the drops contain no replant item (only possible with custom loot tables / datapacks):
+  #   FREE      - replant anyway
+  #   INVENTORY - take one replant item from the player's inventory, leave the block empty if they have none
+  #   SKIP      - do not replant, leave the block empty
+  replant-fallback: FREE
+  # Give drops to players in creative mode.
+  creative-drops: false
+  # Allow players in adventure mode to harvest.
+  allow-adventure: false
