@@ -45,9 +45,10 @@ public final class CropInteractListener implements Listener {
         }
 
         harvestService.findHarvestable(player, block).ifPresent(crop -> {
-            harvestService.harvest(player, block, crop);
-            // Prevent the held item from being used (placing a block, bone meal, ...).
-            event.setCancelled(true);
+            if (harvestService.harvest(player, block, crop)) {
+                // Prevent the held item from being used (placing a block, bone meal, ...).
+                event.setCancelled(true);
+            }
         });
     }
 }

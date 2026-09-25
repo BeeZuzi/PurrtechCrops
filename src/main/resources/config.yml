@@ -38,3 +38,10 @@ harvest:
   creative-drops: false
   # Allow players in adventure mode to harvest.
   allow-adventure: false
+
+protection:
+  # By default, harvesting is blocked wherever a protection plugin denies interacting with the crop.
+  # Enable this if your protection plugin only blocks breaking blocks: every harvest then also fires
+  # a BlockBreakEvent and is skipped when any plugin cancels it.
+  # Note: plugins that react to block breaks (jobs, skills, logging) will also see these harvests.
+  strict: false

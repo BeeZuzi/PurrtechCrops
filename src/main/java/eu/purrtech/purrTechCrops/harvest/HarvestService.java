@@ -1,5 +1,6 @@
 package eu.purrtech.purrTechCrops.harvest;
 
+import eu.purrtech.purrTechCrops.api.event.CropHarvestEvent;
 import eu.purrtech.purrTechCrops.config.PluginConfig;
 import eu.purrtech.purrTechCrops.crop.CropDefinition;
 import org.bukkit.GameMode;
@@ -9,9 +10,9 @@ import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,53 +65,71 @@ public final class HarvestService {
     /**
      * Gives the crop's drops (minus one replant item) and resets the crop to age 0.
      * The caller is responsible for checking {@link #findHarvestable(Player, Block)} first.
+     *
+     * @return false if another plugin prevented the harvest
      */
-    public void harvest(Player player, Block block, CropDefinition crop) {
+    public boolean harvest(Player player, Block block, CropDefinition crop) {
         PluginConfig config = this.config.get();
-        Ageable ageable = (Ageable) block.getBlockData();
         boolean creative = player.getGameMode() == GameMode.CREATIVE;
-        ItemStack hand = player.getInventory().getItemInMainHand();
+        boolean dropItems = !creative || config.creativeDrops();
+
+        if (config.strictProtection()) {
+            // Lets any protection plugin that only guards block breaking veto the harvest.
+            BlockBreakEvent breakEvent = new BlockBreakEvent(block, player);
+            if (!breakEvent.callEvent()) {
+                return false;
+            }
+            dropItems &= breakEvent.isDropItems();
+        }
 
         // Drops must be computed before the block changes; the tool applies Fortune.
-        ItemStack tool = config.applyFortune() ? hand : ItemStack.empty();
-        List<ItemStack> drops = new ArrayList<>(block.getDrops(tool, player));
+        ItemStack hand = player.getInventory().getItemInMainHand();
+        List<ItemStack> drops = new ArrayList<>();
+        if (dropItems) {
+            drops.addAll(block.getDrops(config.applyFortune() ? hand : ItemStack.empty(), player));
+        }
 
-        boolean replant = consumeOne(drops, crop.replantItem())
-                || creative
-                || replantWithoutDrop(player, crop, config.replantFallback());
-        if (replant) {
-            Ageable replanted = (Ageable) ageable.clone();
+        // Nothing is taken from the player's inventory until the harvest event has passed.
+        boolean seedFromDrops = consumeOne(drops, crop.replantItem());
+        boolean replant = seedFromDrops || creative || switch (config.replantFallback()) {
+            case FREE -> true;
+            case SKIP -> false;
+            case INVENTORY -> player.getInventory().containsAtLeast(ItemStack.of(crop.replantItem()), 1);
+        };
+        boolean seedFromInventory = replant && !seedFromDrops && !creative
+                && config.replantFallback() == ReplantFallback.INVENTORY;
+
+        CropHarvestEvent harvestEvent = new CropHarvestEvent(player, block, drops, replant);
+        if (!harvestEvent.callEvent()) {
+            return false;
+        }
+
+        // A listener may have changed the block, so the crop is re-checked before replanting.
+        if (harvestEvent.isReplant() && block.getBlockData() instanceof Ageable replanted) {
+            if (seedFromInventory) {
+                player.getInventory().removeItem(ItemStack.of(crop.replantItem()));
+            }
+            // getBlockData() returns a copy, so other properties (cocoa facing) are kept.
             replanted.setAge(0);
             block.setBlockData(replanted, true);
         } else {
+            if (seedFromDrops) {
+                drops.add(ItemStack.of(crop.replantItem()));
+            }
             block.setType(Material.AIR);
         }
 
-        if (!creative || config.creativeDrops()) {
-            giveDrops(player, block, drops, config.dropMode());
-        }
+        giveDrops(player, block, harvestEvent.getDrops(), config.dropMode());
         if (!creative && config.damageHoe() && isHoe(hand)) {
             player.damageItemStack(EquipmentSlot.HAND, 1);
         }
-    }
-
-    private static boolean replantWithoutDrop(Player player, CropDefinition crop, ReplantFallback fallback) {
-        return switch (fallback) {
-            case FREE -> true;
-            case SKIP -> false;
-            case INVENTORY -> {
-                PlayerInventory inventory = player.getInventory();
-                ItemStack one = ItemStack.of(crop.replantItem());
-                if (!inventory.containsAtLeast(one, 1)) {
-                    yield false;
-                }
-                inventory.removeItem(one);
-                yield true;
-            }
-        };
+        return true;
     }
 
     private static void giveDrops(Player player, Block block, List<ItemStack> drops, DropMode mode) {
+        if (drops.isEmpty()) {
+            return;
+        }
         Collection<ItemStack> toGround = mode == DropMode.INVENTORY
                 ? player.getInventory().addItem(drops.toArray(ItemStack[]::new)).values()
                 : drops;

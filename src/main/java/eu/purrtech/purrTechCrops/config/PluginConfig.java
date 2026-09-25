@@ -31,7 +31,8 @@ public record PluginConfig(
         DropMode dropMode,
         ReplantFallback replantFallback,
         boolean creativeDrops,
-        boolean allowAdventure
+        boolean allowAdventure,
+        boolean strictProtection
 ) {
 
     public static PluginConfig load(FileConfiguration config, Logger logger) {
@@ -45,7 +46,8 @@ public record PluginConfig(
                 parseEnum(config, "harvest.drop-mode", DropMode.GROUND, logger),
                 parseEnum(config, "harvest.replant-fallback", ReplantFallback.FREE, logger),
                 config.getBoolean("harvest.creative-drops", false),
-                config.getBoolean("harvest.allow-adventure", false)
+                config.getBoolean("harvest.allow-adventure", false),
+                config.getBoolean("protection.strict", false)
         );
     }
 
