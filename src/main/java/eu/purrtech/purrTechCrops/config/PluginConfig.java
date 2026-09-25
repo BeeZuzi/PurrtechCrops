@@ -38,7 +38,7 @@ public record PluginConfig(
         Messages messages
 ) {
 
-    public static PluginConfig load(FileConfiguration config, Logger logger) {
+    public static PluginConfig load(FileConfiguration config, Messages messages, Logger logger) {
         return new PluginConfig(
                 loadCrops(config.getConfigurationSection("crops"), logger),
                 Set.copyOf(config.getStringList("disabled-worlds")),
@@ -53,7 +53,7 @@ public record PluginConfig(
                 config.getBoolean("protection.strict", false),
                 config.getBoolean("effects.swing-hand", true),
                 config.getBoolean("effects.break-effect", true),
-                Messages.load(config)
+                messages
         );
     }
 

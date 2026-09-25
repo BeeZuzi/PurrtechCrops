@@ -30,10 +30,24 @@ public final class HarvestService {
 
     private final Supplier<PluginConfig> config;
     private final HarvestToggle toggle;
+    private final DropProvider dropProvider;
 
     public HarvestService(Supplier<PluginConfig> config, HarvestToggle toggle) {
+        this(config, toggle, Block::getDrops);
+    }
+
+    HarvestService(Supplier<PluginConfig> config, HarvestToggle toggle, DropProvider dropProvider) {
         this.config = config;
         this.toggle = toggle;
+        this.dropProvider = dropProvider;
+    }
+
+    /**
+     * Computes a block's loot; replaceable in tests, where the mock server has no loot tables.
+     */
+    @FunctionalInterface
+    interface DropProvider {
+        Collection<ItemStack> getDrops(Block block, ItemStack tool, Player player);
     }
 
     /**
@@ -90,7 +104,7 @@ public final class HarvestService {
         ItemStack hand = player.getInventory().getItemInMainHand();
         List<ItemStack> drops = new ArrayList<>();
         if (dropItems) {
-            drops.addAll(block.getDrops(config.applyFortune() ? hand : ItemStack.empty(), player));
+            drops.addAll(dropProvider.getDrops(block, config.applyFortune() ? hand : ItemStack.empty(), player));
         }
 
         // Nothing is taken from the player's inventory until the harvest event has passed.

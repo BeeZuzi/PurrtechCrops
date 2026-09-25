@@ -1,0 +1,7 @@
+# Zprávy používají formát MiniMessage: https://docs.advntr.dev/minimessage/format.html
+# <prefix> vloží prefix. Zprávu vypneš nastavením na "".
+prefix: "<gradient:#ff9ecd:#a78bfa>PurrTechCrops</gradient> <dark_gray>»</dark_gray>"
+reloaded: "<prefix> <green>Konfigurace načtena, počet plodin: <crops>.</green>"
+toggled-on: "<prefix> <green>Sklízení pravým klikem zapnuto.</green>"
+toggled-off: "<prefix> <red>Sklízení pravým klikem vypnuto.</red>"
+only-players: "<prefix> <red>Tento příkaz může použít jen hráč.</red>"

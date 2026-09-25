@@ -6,8 +6,10 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.Objects;
+
 /**
- * MiniMessage templates from the "messages" config section. Every message may use the {@code <prefix>} tag.
+ * MiniMessage templates from a language file. Every message may use the {@code <prefix>} tag.
  * An empty message is not sent.
  */
 public record Messages(
@@ -20,14 +22,19 @@ public record Messages(
 
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
-    static Messages load(ConfigurationSection config) {
+    public static Messages load(ConfigurationSection language) {
         return new Messages(
-                config.getString("messages.prefix", ""),
-                config.getString("messages.reloaded", ""),
-                config.getString("messages.toggled-on", ""),
-                config.getString("messages.toggled-off", ""),
-                config.getString("messages.only-players", "")
+                string(language, "prefix"),
+                string(language, "reloaded"),
+                string(language, "toggled-on"),
+                string(language, "toggled-off"),
+                string(language, "only-players")
         );
+    }
+
+    // getString(path, default) would ignore the bundled defaults, so null is mapped to "" here.
+    private static String string(ConfigurationSection language, String path) {
+        return Objects.requireNonNullElse(language.getString(path), "");
     }
 
     public void send(Audience audience, String template, TagResolver... placeholders) {

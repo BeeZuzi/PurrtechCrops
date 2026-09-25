@@ -1,0 +1,7 @@
+# Messages use the MiniMessage format: https://docs.advntr.dev/minimessage/format.html
+# <prefix> inserts the prefix. Set a message to "" to disable it.
+prefix: "<gradient:#ff9ecd:#a78bfa>PurrTechCrops</gradient> <dark_gray>»</dark_gray>"
+reloaded: "<prefix> <green>Configuration reloaded, <crops> crop(s) loaded.</green>"
+toggled-on: "<prefix> <green>Right-click harvesting enabled.</green>"
+toggled-off: "<prefix> <red>Right-click harvesting disabled.</red>"
+only-players: "<prefix> <red>Only players can use this command.</red>"

@@ -1,10 +1,14 @@
 package eu.purrtech.purrTechCrops;
 
 import eu.purrtech.purrTechCrops.command.PtcCommand;
+import eu.purrtech.purrTechCrops.config.ConfigUpdater;
+import eu.purrtech.purrTechCrops.config.LanguageLoader;
+import eu.purrtech.purrTechCrops.config.Messages;
 import eu.purrtech.purrTechCrops.config.PluginConfig;
 import eu.purrtech.purrTechCrops.harvest.HarvestService;
 import eu.purrtech.purrTechCrops.harvest.HarvestToggle;
 import eu.purrtech.purrTechCrops.listener.CropInteractListener;
+import eu.purrtech.purrTechCrops.util.CompatibilityCheck;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,12 +33,20 @@ public final class PurrTechCrops extends JavaPlugin {
     }
 
     /**
-     * Re-reads config.yml from disk and swaps the active configuration.
+     * Re-reads config.yml and the language file from disk and swaps the active configuration.
      */
     public void reloadPluginConfig() {
         reloadConfig();
-        pluginConfig = PluginConfig.load(getConfig(), getLogger());
+        List<String> addedKeys = ConfigUpdater.update(getConfig());
+        if (!addedKeys.isEmpty()) {
+            saveConfig();
+            getLogger().info("Updated config.yml, added: " + String.join(", ", addedKeys));
+        }
+
+        Messages messages = new LanguageLoader(this).load(getConfig().getString("language", LanguageLoader.DEFAULT_LANGUAGE));
+        pluginConfig = PluginConfig.load(getConfig(), messages, getLogger());
         getLogger().info("Loaded " + pluginConfig.crops().size() + " crop(s).");
+        CompatibilityCheck.run(getServer().getPluginManager(), pluginConfig.strictProtection(), getLogger());
     }
 
     public PluginConfig pluginConfig() {
