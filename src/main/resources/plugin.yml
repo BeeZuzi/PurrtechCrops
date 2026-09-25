@@ -1,0 +1,13 @@
+name: PurrTechCrops
+version: '${version}'
+description: Right-click fully grown crops to harvest and automatically replant them.
+authors: [PurrTech]
+
+main: eu.purrtech.purrTechCrops.PurrTechCrops
+api-version: '1.21.11'
+load: POSTWORLD
+
+permissions:
+  purrtechcrops.use:
+    description: Allows harvesting and replanting crops with a right click.
+    default: true
