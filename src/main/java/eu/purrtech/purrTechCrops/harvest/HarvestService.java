@@ -3,12 +3,14 @@ package eu.purrtech.purrTechCrops.harvest;
 import eu.purrtech.purrTechCrops.api.event.CropHarvestEvent;
 import eu.purrtech.purrTechCrops.config.PluginConfig;
 import eu.purrtech.purrTechCrops.crop.CropDefinition;
+import eu.purrtech.purrTechCrops.util.Effects;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -27,9 +29,11 @@ import java.util.function.Supplier;
 public final class HarvestService {
 
     private final Supplier<PluginConfig> config;
+    private final HarvestToggle toggle;
 
-    public HarvestService(Supplier<PluginConfig> config) {
+    public HarvestService(Supplier<PluginConfig> config, HarvestToggle toggle) {
         this.config = config;
+        this.toggle = toggle;
     }
 
     /**
@@ -48,8 +52,8 @@ public final class HarvestService {
         return crop;
     }
 
-    private static boolean canHarvest(Player player, Block block, PluginConfig config) {
-        if (config.disabledWorlds().contains(block.getWorld().getName())) {
+    private boolean canHarvest(Player player, Block block, PluginConfig config) {
+        if (!toggle.isEnabled(player) || config.disabledWorlds().contains(block.getWorld().getName())) {
             return false;
         }
         GameMode gameMode = player.getGameMode();
@@ -104,6 +108,7 @@ public final class HarvestService {
             return false;
         }
 
+        BlockData harvested = block.getBlockData();
         // A listener may have changed the block, so the crop is re-checked before replanting.
         if (harvestEvent.isReplant() && block.getBlockData() instanceof Ageable replanted) {
             if (seedFromInventory) {
@@ -119,6 +124,7 @@ public final class HarvestService {
             block.setType(Material.AIR);
         }
 
+        Effects.playHarvest(player, block, harvested, config);
         giveDrops(player, block, harvestEvent.getDrops(), config.dropMode());
         if (!creative && config.damageHoe() && isHoe(hand)) {
             player.damageItemStack(EquipmentSlot.HAND, 1);

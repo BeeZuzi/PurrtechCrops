@@ -11,3 +11,9 @@ permissions:
   purrtechcrops.use:
     description: Allows harvesting and replanting crops with a right click.
     default: true
+  purrtechcrops.toggle:
+    description: Allows turning right-click harvesting on and off for yourself with /ptc toggle.
+    default: true
+  purrtechcrops.admin:
+    description: Allows reloading the configuration with /ptc reload.
+    default: op

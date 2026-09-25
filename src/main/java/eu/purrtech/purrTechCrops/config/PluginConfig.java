@@ -32,7 +32,10 @@ public record PluginConfig(
         ReplantFallback replantFallback,
         boolean creativeDrops,
         boolean allowAdventure,
-        boolean strictProtection
+        boolean strictProtection,
+        boolean swingHand,
+        boolean breakEffect,
+        Messages messages
 ) {
 
     public static PluginConfig load(FileConfiguration config, Logger logger) {
@@ -47,7 +50,10 @@ public record PluginConfig(
                 parseEnum(config, "harvest.replant-fallback", ReplantFallback.FREE, logger),
                 config.getBoolean("harvest.creative-drops", false),
                 config.getBoolean("harvest.allow-adventure", false),
-                config.getBoolean("protection.strict", false)
+                config.getBoolean("protection.strict", false),
+                config.getBoolean("effects.swing-hand", true),
+                config.getBoolean("effects.break-effect", true),
+                Messages.load(config)
         );
     }
 
