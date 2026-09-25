@@ -5,3 +5,4 @@ reloaded: "<prefix> <green>Configuration reloaded, <crops> crop(s) loaded.</gree
 toggled-on: "<prefix> <green>Right-click harvesting enabled.</green>"
 toggled-off: "<prefix> <red>Right-click harvesting disabled.</red>"
 only-players: "<prefix> <red>Only players can use this command.</red>"
+harvest-denied: "<prefix> <red>You are not allowed to harvest here.</red>"

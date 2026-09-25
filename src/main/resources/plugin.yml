@@ -6,6 +6,7 @@ authors: [PurrTech]
 main: eu.purrtech.purrTechCrops.PurrTechCrops
 api-version: '1.21.11'
 load: POSTWORLD
+softdepend: [Residence]
 
 permissions:
   purrtechcrops.use:

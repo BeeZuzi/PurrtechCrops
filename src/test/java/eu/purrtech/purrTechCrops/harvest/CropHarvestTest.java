@@ -55,6 +55,8 @@ class CropHarvestTest {
     /** Loot returned by the fake loot table; the mock server has none. */
     private List<ItemStack> loot;
     private ItemStack lastTool;
+    /** Stands in for a protection hook such as Residence. */
+    private boolean guardAllows = true;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -73,7 +75,8 @@ class CropHarvestTest {
 
         loot = List.of(new ItemStack(Material.WHEAT), new ItemStack(Material.WHEAT_SEEDS, 3));
         toggle = new HarvestToggle(plugin);
-        HarvestService service = new HarvestService(() -> config, toggle, (block, tool, p) -> {
+        HarvestGuard guard = (p, block) -> guardAllows;
+        HarvestService service = new HarvestService(() -> config, toggle, List.of(guard), (block, tool, p) -> {
             lastTool = tool;
             return loot.stream().map(ItemStack::clone).toList();
         });
@@ -363,6 +366,32 @@ class CropHarvestTest {
         set("harvest.apply-fortune", false);
         rightClick(crop(Material.WHEAT, true));
         assertTrue(lastTool.isEmpty());
+    }
+
+    // --- protection hooks (HarvestGuard) ---
+
+    @Test
+    void deniedGuardLeavesCropUntouched() {
+        guardAllows = false;
+        Block block = crop(Material.WHEAT, true);
+
+        PlayerInteractEvent click = rightClick(block);
+
+        assertMatureAndUntouched(block);
+        assertEquals(Event.Result.DEFAULT, click.useItemInHand());
+    }
+
+    @Test
+    void deniedGuardRunsBeforeAnyEvent() {
+        guardAllows = false;
+        set("protection.strict", true);
+        List<Event> fired = new ArrayList<>();
+        listen(BlockBreakEvent.class, fired::add);
+        listen(CropHarvestEvent.class, fired::add);
+
+        rightClick(crop(Material.WHEAT, true));
+
+        assertTrue(fired.isEmpty());
     }
 
     // --- strict protection ---

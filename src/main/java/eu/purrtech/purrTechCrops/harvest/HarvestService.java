@@ -30,15 +30,18 @@ public final class HarvestService {
 
     private final Supplier<PluginConfig> config;
     private final HarvestToggle toggle;
+    private final List<HarvestGuard> guards;
     private final DropProvider dropProvider;
 
-    public HarvestService(Supplier<PluginConfig> config, HarvestToggle toggle) {
-        this(config, toggle, Block::getDrops);
+    public HarvestService(Supplier<PluginConfig> config, HarvestToggle toggle, List<HarvestGuard> guards) {
+        this(config, toggle, guards, Block::getDrops);
     }
 
-    HarvestService(Supplier<PluginConfig> config, HarvestToggle toggle, DropProvider dropProvider) {
+    HarvestService(Supplier<PluginConfig> config, HarvestToggle toggle, List<HarvestGuard> guards,
+                   DropProvider dropProvider) {
         this.config = config;
         this.toggle = toggle;
+        this.guards = List.copyOf(guards);
         this.dropProvider = dropProvider;
     }
 
@@ -90,6 +93,14 @@ public final class HarvestService {
         PluginConfig config = this.config.get();
         boolean creative = player.getGameMode() == GameMode.CREATIVE;
         boolean dropItems = !creative || config.creativeDrops();
+
+        for (HarvestGuard guard : guards) {
+            if (!guard.canHarvest(player, block)) {
+                // Action bar instead of chat: holding right click would otherwise spam the chat.
+                config.messages().sendActionBar(player, config.messages().harvestDenied());
+                return false;
+            }
+        }
 
         if (config.strictProtection()) {
             // Lets any protection plugin that only guards block breaking veto the harvest.

@@ -33,6 +33,7 @@ public record PluginConfig(
         boolean creativeDrops,
         boolean allowAdventure,
         boolean strictProtection,
+        boolean residenceHook,
         boolean swingHand,
         boolean breakEffect,
         Messages messages
@@ -51,6 +52,7 @@ public record PluginConfig(
                 config.getBoolean("harvest.creative-drops", false),
                 config.getBoolean("harvest.allow-adventure", false),
                 config.getBoolean("protection.strict", false),
+                config.getBoolean("hooks.residence", true),
                 config.getBoolean("effects.swing-hand", true),
                 config.getBoolean("effects.break-effect", true),
                 messages

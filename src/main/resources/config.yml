@@ -1,6 +1,6 @@
 # PurrTechCrops configuration
 # Do not change this value, it is used to update the config between plugin versions.
-config-version: 1
+config-version: 2
 
 # Language of the messages. Loaded from plugins/PurrTechCrops/lang/<language>.yml
 # Bundled: en, cs. To add a language, copy lang/en.yml to a new file and translate it.
@@ -49,6 +49,11 @@ protection:
   # a BlockBreakEvent and is skipped when any plugin cancels it.
   # Note: plugins that react to block breaks (jobs, skills, logging) will also see these harvests.
   strict: false
+
+# Integrations with other plugins. Each one is only active when that plugin is installed.
+hooks:
+  # Check the Residence "harvest" flag (/res set harvest true|false). Residence admins bypass it.
+  residence: true
 
 effects:
   # Play the hand swing animation when harvesting.

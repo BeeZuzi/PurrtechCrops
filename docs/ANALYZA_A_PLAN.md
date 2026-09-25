@@ -32,6 +32,7 @@ Na nevyrostlou plodinu se nic nemění – funguje vanilla chování (např. kos
 | F11 | `/ptc toggle` – hráč si funkci vypne/zapne (uloženo v PDC hráče) | COULD |
 | F12 | Vlastní event `CropHarvestEvent` (API pro jiné pluginy) | COULD |
 | F13 | Integrace CoreProtect (logování), Jobs/mcMMO (odměny) | LATER |
+| F14 | Integrace Residence (flag `harvest`) | MUST (hotovo) |
 
 **Mimo scope (zatím):** melouny/dýně (stonky), cukrová třtina, kaktus, pitcher plant (2 bloky vysoký), torchflower (po dozrání se mění na jiný blok), sladké bobule (vanilla už right-click sklizeň má).
 
@@ -233,7 +234,15 @@ Neplatné názvy materiálů při načtení zalogovat jako warning a přeskočit
 - [x] Verze `1.0.0`, README (anglicky), build jar
 - [ ] Provést ruční testy, stránka na Modrinth/Hangar
 
-**Odhad celkem:** ~10 h čisté práce.
+### Fáze 6 – Integrace Residence
+- [x] Residence sám hlídá flag `harvest` jen u sladkých bobulí a jeskynních lián → bez hooku by šly sklízet plodiny v cizích rezidencích
+- [x] Rozhraní `HarvestGuard` pro ochranné pluginy, `ResidenceGuard` kopíruje kontrolu Residence (globální vypnutí flagu, ResAdmin, `FlagPermissions.has(..., harvest, true)`)
+- [x] `softdepend: [Residence]`, závislost `compileOnly` z JitPacku (bez tranzitivních závislostí), hook se použije jen při zapnutém Residence
+- [x] `hooks.residence` v configu (config-version 2), zpráva `harvest-denied` v action baru
+- [x] Testy: zákaz ochrany zastaví sklizeň ještě před jakýmkoli eventem; hlavní třída se načte bez Residence
+- [ ] Ruční test s Residence (viz TESTOVANI.md)
+
+**Odhad celkem:** ~10 h čisté práce + ~1,5 h Residence.
 
 ---
 

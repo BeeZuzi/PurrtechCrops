@@ -33,3 +33,11 @@ Server: `./gradlew runServer` (při prvním spuštění potvrdit EULA v `run/eul
 - [ ] WorldGuard region bez práv → nic se nestane
 - [ ] Totéž s `protection.strict: true`
 - [ ] `protection.strict: true` s mcMMO / Jobs → varování v konzoli při startu
+
+## Residence
+- [ ] Při startu je v konzoli „Hooked into Residence (harvest flag).“; bez Residence se plugin načte bez chyb
+- [ ] Cizí rezidence s `harvest false` → nic se nestane, v action baru je zpráva „nemůžeš sklízet“
+- [ ] `/res pset <hráč> harvest true` → hráč sklízet může
+- [ ] Vlastník rezidence sklízí normálně; `/resadmin` obchází zákaz
+- [ ] Mimo rezidenci funguje sklízení podle world flagů Residence
+- [ ] `hooks.residence: false` + `/ptc reload` → Residence se nekontroluje

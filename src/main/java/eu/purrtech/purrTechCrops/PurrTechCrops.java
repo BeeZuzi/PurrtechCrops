@@ -5,13 +5,16 @@ import eu.purrtech.purrTechCrops.config.ConfigUpdater;
 import eu.purrtech.purrTechCrops.config.LanguageLoader;
 import eu.purrtech.purrTechCrops.config.Messages;
 import eu.purrtech.purrTechCrops.config.PluginConfig;
+import eu.purrtech.purrTechCrops.harvest.HarvestGuard;
 import eu.purrtech.purrTechCrops.harvest.HarvestService;
 import eu.purrtech.purrTechCrops.harvest.HarvestToggle;
+import eu.purrtech.purrTechCrops.hook.ResidenceGuard;
 import eu.purrtech.purrTechCrops.listener.CropInteractListener;
 import eu.purrtech.purrTechCrops.util.CompatibilityCheck;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class PurrTechCrops extends JavaPlugin {
@@ -24,7 +27,7 @@ public final class PurrTechCrops extends JavaPlugin {
         reloadPluginConfig();
 
         HarvestToggle toggle = new HarvestToggle(this);
-        HarvestService harvestService = new HarvestService(this::pluginConfig, toggle);
+        HarvestService harvestService = new HarvestService(this::pluginConfig, toggle, createGuards());
         getServer().getPluginManager().registerEvents(new CropInteractListener(harvestService), this);
 
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->
@@ -51,5 +54,15 @@ public final class PurrTechCrops extends JavaPlugin {
 
     public PluginConfig pluginConfig() {
         return pluginConfig;
+    }
+
+    // Hook classes link against the other plugin, so they are only touched when it is enabled.
+    private List<HarvestGuard> createGuards() {
+        List<HarvestGuard> guards = new ArrayList<>();
+        if (getServer().getPluginManager().isPluginEnabled("Residence")) {
+            guards.add(ResidenceGuard.create(this::pluginConfig));
+            getLogger().info("Hooked into Residence (harvest flag).");
+        }
+        return guards;
     }
 }

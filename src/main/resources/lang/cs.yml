@@ -5,3 +5,4 @@ reloaded: "<prefix> <green>Konfigurace načtena, počet plodin: <crops>.</green>
 toggled-on: "<prefix> <green>Sklízení pravým klikem zapnuto.</green>"
 toggled-off: "<prefix> <red>Sklízení pravým klikem vypnuto.</red>"
 only-players: "<prefix> <red>Tento příkaz může použít jen hráč.</red>"
+harvest-denied: "<prefix> <red>Tady nemůžeš sklízet.</red>"

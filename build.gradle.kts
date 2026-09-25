@@ -6,10 +6,15 @@ plugins {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://jitpack.io") {
+        content { includeGroup("com.github.Zrips") }
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    // Only the API is needed; Residence's own dependency tree is large and partly unresolvable.
+    compileOnly("com.github.Zrips:Residence:6.0.2.3") { isTransitive = false }
 
     testImplementation("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     testImplementation("org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.116.3")

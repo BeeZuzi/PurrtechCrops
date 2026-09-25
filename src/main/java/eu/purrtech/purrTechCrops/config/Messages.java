@@ -1,6 +1,7 @@
 package eu.purrtech.purrTechCrops.config;
 
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -17,7 +18,8 @@ public record Messages(
         String reloaded,
         String toggledOn,
         String toggledOff,
-        String onlyPlayers
+        String onlyPlayers,
+        String harvestDenied
 ) {
 
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
@@ -28,7 +30,8 @@ public record Messages(
                 string(language, "reloaded"),
                 string(language, "toggled-on"),
                 string(language, "toggled-off"),
-                string(language, "only-players")
+                string(language, "only-players"),
+                string(language, "harvest-denied")
         );
     }
 
@@ -38,13 +41,22 @@ public record Messages(
     }
 
     public void send(Audience audience, String template, TagResolver... placeholders) {
-        if (template.isEmpty()) {
-            return;
+        if (!template.isEmpty()) {
+            audience.sendMessage(render(template, placeholders));
         }
+    }
+
+    public void sendActionBar(Audience audience, String template, TagResolver... placeholders) {
+        if (!template.isEmpty()) {
+            audience.sendActionBar(render(template, placeholders));
+        }
+    }
+
+    private Component render(String template, TagResolver... placeholders) {
         TagResolver resolver = TagResolver.resolver(
                 TagResolver.resolver(placeholders),
                 Placeholder.parsed("prefix", prefix)
         );
-        audience.sendMessage(MINI_MESSAGE.deserialize(template, resolver));
+        return MINI_MESSAGE.deserialize(template, resolver);
     }
 }
