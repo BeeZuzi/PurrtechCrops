@@ -240,6 +240,7 @@ Neplatné názvy materiálů při načtení zalogovat jako warning a přeskočit
 - [x] `softdepend: [Residence]`, závislost `compileOnly` z JitPacku (bez tranzitivních závislostí), hook se použije jen při zapnutém Residence
 - [x] `hooks.residence` v configu (config-version 2), zpráva `harvest-denied` v action baru
 - [x] Testy: zákaz ochrany zastaví sklizeň ještě před jakýmkoli eventem; hlavní třída se načte bez Residence
+- [x] Verze `1.1.0`
 - [ ] Ruční test s Residence (viz TESTOVANI.md)
 
 **Odhad celkem:** ~10 h čisté práce + ~1,5 h Residence.
